@@ -1,11 +1,13 @@
 from customers.models import Customer
 from django.http import JsonResponse , Http404
 from customers.serializers import CustomerSerializer
-from rest_framework.decorators import api_view #which methods are allowed
+from rest_framework.decorators import api_view , permission_classes #which methods are allowed
 from rest_framework.response import Response #json 404 or html response
 from rest_framework import status #options fro status code -->200s 300s  400s and others
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
 def customers(request):
     if request.method=='GET':
         #invoke serializer and return to client
@@ -21,7 +23,10 @@ def customers(request):
             return Response({'customer': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
 
+
+
 @api_view(['GET','POST','DELETE']) #define api that can take get post delete request --> we used api decorator which describes functionality fro this function
+@permission_classes([IsAuthenticated])
 def customer(request,id):
     try:
         data = Customer.objects.get(pk=id) # we don't wanna get all of them so we use get() instead of all() 
