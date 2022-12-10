@@ -1,6 +1,6 @@
 from customers.models import Customer
 from django.http import JsonResponse , Http404
-from customers.serializers import CustomerSerializer
+from customers.serializers import CustomerSerializer,UserSerializer
 from rest_framework.decorators import api_view , permission_classes #which methods are allowed
 from rest_framework.response import Response #json 404 or html response
 from rest_framework import status #options fro status code -->200s 300s  400s and others
@@ -47,3 +47,11 @@ def customer(request,id):
             return Response({'customer':serializer.data})
 
         return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def register(request):
+    serializer = UserSerializer(data= request.data) 
+    if serializer.is_valid():
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
