@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view , permission_classes #which metho
 from rest_framework.response import Response #json 404 or html response
 from rest_framework import status #options fro status code -->200s 300s  400s and others
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework_simplejwt.tokens import RefreshToken
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
 def customers(request):
@@ -53,5 +53,12 @@ def customer(request,id):
 def register(request):
     serializer = UserSerializer(data= request.data) 
     if serializer.is_valid():
-        serializer.save()
-        return Response(status=status.HTTP_201_CREATED)
+        user = serializer.save() #save the user Object and return the object 
+        refresh = RefreshToken.for_user(user)
+        tokens = {
+            'refresh': str(refresh),
+            'access' : str(refresh.access_token)
+        }
+        return Response(tokens,status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
