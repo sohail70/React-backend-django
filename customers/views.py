@@ -7,7 +7,7 @@ from rest_framework import status #options fro status code -->200s 300s  400s an
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 @api_view(['GET','POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated]) #mittoni ino comment kuni ta zamani ke be http://127.0.0.1:8000/api/customers/ miri gir nade
 def customers(request):
     if request.method=='GET':
         #invoke serializer and return to client
@@ -26,7 +26,7 @@ def customers(request):
 
 
 @api_view(['GET','POST','DELETE']) #define api that can take get post delete request --> we used api decorator which describes functionality fro this function
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated]) #mitooni ino comment kun age miikhay vaghti be http://127.0.0.1:8000/api/customers/2 masalan  miri gir nade
 def customer(request,id):
     try:
         data = Customer.objects.get(pk=id) # we don't wanna get all of them so we use get() instead of all() 
