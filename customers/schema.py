@@ -2,7 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from customers.models import Customer , Order
-
+import time
 class CustomerType(DjangoObjectType):
     class Meta:
         model = Customer
@@ -21,9 +21,25 @@ class CreateCustomer(graphene.Mutation):
     customer = graphene.Field(CustomerType)
 
     def mutate(root , info , name , industry):
+        time.sleep(5)
+        # raise
         customer = Customer(name=name , industry=industry)
         customer.save()
         return CreateCustomer(customer = customer )
+
+class CreateOrder(graphene.Mutation):
+    class Arguments:
+        description = graphene.String()
+        total_in_cents = graphene.Int()
+        customer = graphene.ID()
+    
+    order = graphene.Field(OrderType)
+    
+    def mutate(root , info , description , total_in_cents , customer):
+        order = Order(description=description , total_in_cents=total_in_cents , customer_id=customer) # deghat kun agar customer_id ro benvisi customer dar graph ql moghe mutation query null mide --> chun it expects cutomer object not a number 
+        order.save()
+        return CreateOrder(order=order)
+
 
 class Query(graphene.ObjectType):
     customers = graphene.List(CustomerType)
@@ -46,6 +62,8 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    createCustomer = CreateCustomer.Field()
+    create_customer = CreateCustomer.Field()
+    create_order = CreateOrder.Field()
+
 
 schema = graphene.Schema(query=Query , mutation=Mutation) #schema dovomi ke dar setting.py neveshti dar GRAPHEN in object hast 
